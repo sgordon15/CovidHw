@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
         private final CovidService covidService;
 
         @GetMapping("/date/{year}/{month}/{day}")
-        public String getQuarantineTime(@PathVariable int year,
+        public long getQuarantineTime(@PathVariable int year,
                                         @PathVariable int month,
                                         @PathVariable int day) {
             return covidService.getQuarantineTime(year, month, day);
