@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 @Service
@@ -17,25 +18,29 @@ public class CovidService {
     private final RestTemplate restTemplate;
 
     public long getQuarantineTime(int year, int month, int day) {
-        TimeServerResponse ResponseCurrentTime = restTemplate.exchange("http://localhost:8382/api/v1/getTime",
+        TimeServerResponse responseCurrentTime = restTemplate.exchange("http://localhost:8382/api/v1/getTime",
                 HttpMethod.GET,
                 null, TimeServerResponse.class).getBody();
         String exposureYear = Integer.toString(year);
         String exposureMonth = Integer.toString(month);
         String exposureDay = Integer.toString(day);
         String exposureTime= exposureYear + "-" +exposureMonth + "-" +exposureDay;
-        String currentTime = ResponseCurrentTime.getLocalTime();
+        String currentTime = responseCurrentTime.getLocalTime();
 
         //Parsing the date
-        LocalDate dateofExposure= LocalDate.parse(exposureTime);
+        DateTimeFormatter dateFormat =DateTimeFormatter.ofPattern("yyyy-MM-dd 'T' HH:mm:ss:SSS 'Z' ZZZ");
+        LocalDate dateExposure= LocalDate.parse(exposureTime,dateFormat);
+        System.out.println(dateExposure);
         LocalDate dateAfter = LocalDate.parse(currentTime);
+        System.out.println(dateAfter);
 
+       // create formatter
         //calculating number of days in between
-        long noOfDaysBetween = ChronoUnit.DAYS.between(dateofExposure, dateAfter);
+        long noOfDaysBetween = ChronoUnit.DAYS.between(dateExposure, dateAfter);
 
         return noOfDaysBetween;
 
-    }
+    } //current time and second parameter for date formatter
 }
 
 
